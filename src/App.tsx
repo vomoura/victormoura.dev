@@ -40,6 +40,11 @@ function App() {
 
       <main className="content">
         <div className="hero">
+          <div className="hexagon-wrapper">
+            <div className="hexagon-inner">
+              <img src="/photo.jpg" alt="Victor Moura" />
+            </div>
+          </div>
           <div className="hero-text">
             <h1 className="name">
               VICTOR<span className="accent">MOURA</span>
