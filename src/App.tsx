@@ -78,9 +78,8 @@ function App() {
             href="mailto:contato@victormoura.dev"
             aria-label="E-mail"
           >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="2" y="4" width="20" height="16" rx="2" />
-              <polyline points="22,6 12,13 2,6" />
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm6 15.5c0 .83-.67 1.5-1.5 1.5h-9c-.83 0-1.5-.67-1.5-1.5v-7c0-.83.67-1.5 1.5-1.5h9c.83 0 1.5.67 1.5 1.5v7zm-1.5-5.79L12 12.5 7.5 9.71V8.5L12 11.29l4.5-2.79v1.21z"/>
             </svg>
           </a>
         </nav>
