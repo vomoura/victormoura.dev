@@ -18,6 +18,8 @@
   --color-text: #f0f0f0;
   --color-subtle: #aaa;
   --color-surface: rgba(255, 255, 255, 0.05);
+  --color-card-bg: rgba(255, 255, 255, 0.04);
+  --color-card-border: rgba(255, 255, 255, 0.1);
   --color-toggle-bg: rgba(255, 255, 255, 0.1);
   --color-toggle-hover: rgba(255, 255, 255, 0.2);
 }
@@ -29,6 +31,8 @@
   --color-text: #1a1a1a;
   --color-subtle: #555;
   --color-surface: rgba(0, 0, 0, 0.03);
+  --color-card-bg: rgba(255, 255, 255, 0.6);
+  --color-card-border: rgba(0, 0, 0, 0.1);
   --color-toggle-bg: rgba(0, 0, 0, 0.08);
   --color-toggle-hover: rgba(0, 0, 0, 0.15);
 }
@@ -74,6 +78,7 @@ body {
   cursor: pointer;
   color: var(--color-text);
   transition: background 0.2s ease, transform 0.2s ease;
+  z-index: 10;
 }
 
 .theme-toggle:hover {
@@ -88,13 +93,48 @@ body {
 
 /* Main content */
 .content {
-  text-align: center;
   flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 3D Card */
+.card {
+  position: relative;
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-card-border);
+  border-radius: 20px;
+  padding: 3rem 4rem;
+  transform-style: preserve-3d;
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+  will-change: transform;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+}
+
+.card:hover {
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+}
+
+.card-glare {
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.card-content {
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 2.5rem;
+  gap: 2rem;
 }
 
 /* Hero section */
@@ -104,12 +144,11 @@ body {
   gap: 1.5rem;
 }
 
-/* Hexagon photo - regular hexagon (pointy-top)
-   width:height ratio = √3:2 ensures all sides are equal */
+/* Hexagon photo */
 .hexagon-wrapper {
   flex-shrink: 0;
   width: 150px;
-  height: 173px; /* 150 * (2/√3) ≈ 173 */
+  height: 173px;
   position: relative;
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
   background: var(--color-accent);
@@ -165,8 +204,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  font-size: 2rem;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   transition: color 0.2s ease, background 0.2s ease, transform 0.2s ease;
 }
@@ -195,6 +235,10 @@ body {
 
 /* Responsive */
 @media (max-width: 480px) {
+  .card {
+    padding: 2rem 1.5rem;
+  }
+
   .hero {
     flex-direction: column;
     text-align: center;

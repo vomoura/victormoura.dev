@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 function App() {
   const [dark, setDark] = useState(() => {
@@ -6,10 +6,82 @@ function App() {
     return saved ? saved === 'dark' : true
   })
 
+  const cardRef = useRef<HTMLDivElement>(null)
+  const [cardStyle, setCardStyle] = useState<React.CSSProperties>({})
+  const [glareStyle, setGlareStyle] = useState<React.CSSProperties>({})
+
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light')
     localStorage.setItem('theme', dark ? 'dark' : 'light')
   }, [dark])
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const card = cardRef.current
+    if (!card) return
+
+    const rect = card.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    applyEffect(x, y, rect.width, rect.height)
+  }
+
+  const handleMouseLeave = () => {
+    resetEffect()
+  }
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    const touch = e.touches[0]
+    const card = cardRef.current
+    if (!card || !touch) return
+
+    const rect = card.getBoundingClientRect()
+    const x = touch.clientX - rect.left
+    const y = touch.clientY - rect.top
+    applyEffect(x, y, rect.width, rect.height)
+  }
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    const touch = e.touches[0]
+    const card = cardRef.current
+    if (!card || !touch) return
+
+    const rect = card.getBoundingClientRect()
+    const x = touch.clientX - rect.left
+    const y = touch.clientY - rect.top
+    applyEffect(x, y, rect.width, rect.height)
+  }
+
+  const handleTouchEnd = () => {
+    resetEffect()
+  }
+
+  const applyEffect = (x: number, y: number, width: number, height: number) => {
+    const centerX = width / 2
+    const centerY = height / 2
+
+    const rotateX = ((y - centerY) / centerY) * -12
+    const rotateY = ((x - centerX) / centerX) * 12
+
+    setCardStyle({
+      transform: `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`,
+    })
+
+    const glareX = (x / width) * 100
+    const glareY = (y / height) * 100
+
+    setGlareStyle({
+      background: `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 40%, transparent 70%)`,
+      opacity: 1,
+    })
+  }
+
+  const resetEffect = () => {
+    setCardStyle({
+      transform: 'perspective(800px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)',
+    })
+    setGlareStyle({ opacity: 0 })
+  }
 
   return (
     <div className="container">
@@ -39,50 +111,55 @@ function App() {
       </button>
 
       <main className="content">
-        <div className="hero">
-          <div className="hexagon-wrapper">
-            <div className="hexagon-inner">
-              <img src="/photo.jpg" alt="Victor Moura" />
+        <div
+          className="card"
+          ref={cardRef}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          style={cardStyle}
+        >
+          <div className="card-glare" style={glareStyle}></div>
+          <div className="card-content">
+            <div className="hero">
+              <div className="hexagon-wrapper">
+                <div className="hexagon-inner">
+                  <img src="/photo.jpg" alt="Victor Moura" />
+                </div>
+              </div>
+              <div className="hero-text">
+                <h1 className="name">
+                  VICTOR<span className="accent">MOURA</span>
+                </h1>
+                <p className="subtitle">developer</p>
+              </div>
             </div>
-          </div>
-          <div className="hero-text">
-            <h1 className="name">
-              VICTOR<span className="accent">MOURA</span>
-            </h1>
-            <p className="subtitle">developer</p>
+
+            <nav className="links" aria-label="Social links">
+              <a
+                href="https://github.com/vomoura"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub"
+              >
+                <i className="fa-brands fa-github"></i>
+              </a>
+              <a
+                href="https://linkedin.com/in/vomoura"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn"
+              >
+                <i className="fa-brands fa-linkedin"></i>
+              </a>
+              <a href="mailto:contato@victormoura.dev" aria-label="E-mail">
+                <i className="fa-solid fa-envelope"></i>
+              </a>
+            </nav>
           </div>
         </div>
-
-        <nav className="links" aria-label="Social links">
-          <a
-            href="https://github.com/vomoura"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="GitHub"
-          >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
-            </svg>
-          </a>
-          <a
-            href="https://linkedin.com/in/vomoura"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="LinkedIn"
-          >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-            </svg>
-          </a>
-          <a
-            href="mailto:contato@victormoura.dev"
-            aria-label="E-mail"
-          >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm7 16c0 .55-.45 1-1 1H6c-.55 0-1-.45-1-1V8c0-.55.45-1 1-1h12c.55 0 1 .45 1 1v8zm-1-6.79L12 13.5 6 9.21V8l6 4.5L18 8v1.21z"/>
-            </svg>
-          </a>
-        </nav>
       </main>
 
       <footer className="footer">
