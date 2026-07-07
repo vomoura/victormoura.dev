@@ -235,8 +235,14 @@ body {
 
 /* Responsive */
 @media (max-width: 480px) {
+  .container {
+    padding: 1rem;
+  }
+
   .card {
-    padding: 2rem 1.5rem;
+    padding: 2.5rem 2rem;
+    width: calc(100% - 1rem);
+    max-width: 360px;
   }
 
   .hero {
